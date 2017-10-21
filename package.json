@@ -1,0 +1,26 @@
+{
+  "name": "mediaevents",
+  "version": "1.0.0",
+  "description": "Fire events for specific timeframes easily",
+  "main": "mediaevents.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixeldesu/mediaEvents.git"
+  },
+  "keywords": [
+    "audio",
+    "video",
+    "media",
+    "events",
+    "timing"
+  ],
+  "author": "Andreas Nedbal <andy@pixelde.su>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/pixeldesu/mediaEvents/issues"
+  },
+  "homepage": "https://github.com/pixeldesu/mediaEvents#readme"
+}
