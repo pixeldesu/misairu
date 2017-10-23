@@ -1,3 +1,12 @@
+/* mediaEvents
+ * https://github.com/pixeldesu/mediaEvents
+ * 
+ * 
+ * Copyright pixeldesu and other contributors
+ * Licensed under the MIT License
+ * https://github.com/pixeldesu/mediaEvents/blob/master/LICENSE
+ */
+
 class mediaEvents {
   constructor (timings, type, textNode) {
     if (type !== null) {

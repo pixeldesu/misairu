@@ -3,11 +3,19 @@
 
 ## Getting it
 
+**NPM:**
+
 ```
-npm install mediaevents
+$ npm install mediaevents
 ```
 
-Or you can just grab `mediaevents.js` and put it somewhere in your project with a `<script>` tag!
+**unpkg:**
+
+```html
+<script src="https://unpkg.com/mediaevents@1.0.0/mediaevents.js"></script>
+```
+
+Or you can go the traditional way, grab `mediaevents.js` from the repository and put it somewhere in your project with a `<script>` tag!
 
 ## Usage
 
@@ -24,7 +32,7 @@ const timings = {
 }
 
 const ev = new mediaEvents(timings, 'text', text)
-ev.bind(audio)
+ev.bind(media)
 ```
 
 **Event:**
@@ -46,7 +54,7 @@ function handleTen () {
 }
 
 const ev = new mediaEvents(timings)
-ev.bind(audio)
+ev.bind(media)
 ```
 
 ## Reference
@@ -69,4 +77,4 @@ You can use floats as timing values, but it's not guaranteed it will make it mor
 
 ## License
 
-mediaEvents is licensed under the aGPL v3 license
+mediaEvents is licensed under the MIT license
