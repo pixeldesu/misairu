@@ -1,6 +1,6 @@
 {
   "name": "mediaevents",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Fire events for specific timeframes easily",
   "main": "mediaevents.js",
   "scripts": {

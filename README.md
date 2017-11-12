@@ -26,31 +26,13 @@ const media = document.getElementById('audioplayer')
 const text = document.getElementById('text')
 
 const timings = {
-  "0": "Introduction",
-  "10": "This text shows up after 10 seconds",
-  "15": "And this one after 15"
-}
-
-const ev = new mediaEvents(timings, 'text', text)
-ev.bind(media)
-```
-
-**Event:**
-
-```js
-const media = document.getElementById('audioplayer')
-
-const timings = {
-  "0": "handleIntro",
-  "10": "handleTen"
-}
-
-function handleIntro () {
-  console.log("This executes at 0 seconds")
-}
-
-function handleTen () {
-  console.log("This text shows up after 10 seconds")
+  "0": function() {
+    text.innerHTML = 'New text at start'
+  },
+  "10": function() {
+    document.body.style.backgroundColor = 'lightblue'
+    text.innerHTML = 'New text and background color after 10 seconds'
+  }
 }
 
 const ev = new mediaEvents(timings)
@@ -59,11 +41,9 @@ ev.bind(media)
 
 ## Reference
 
-### `new mediaEvents(timings, type, textNode)`
+### `new mediaEvents(timings)`
 
-* **`timings`:** (required) Object where the keys represent the time and the values either are text or function names (accessible on `window`)
-* **`type`:** (optional) Type of event handling, can be either `text` or `events` (`events` by default)
-* **`textNode`:** (optional) If the `text` event type is used, this is required. Reference of a DOMNode where the text should be put in.
+* **`timings`:** (required) Object where the keys represent the time and the values are functions or function references
 
 ### `mediaEvents.bind(mediaNode)`
 

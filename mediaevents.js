@@ -8,15 +8,7 @@
  */
 
 class mediaEvents {
-  constructor (timings, type, textNode) {
-    if (type !== null) {
-      this.type = type
-    } else {
-      this.type = 'events'
-    }
-    if (type === 'text' && textNode === null) console.error('You need to add a DOMNode for the "text" event to attach to')
-    this.textNode = textNode
-
+  constructor (timings) {
     if (timings === null) console.error('You need to specify a timings object')
     this.timings = timings
 
@@ -26,7 +18,7 @@ class mediaEvents {
     }
   }
 
-  getActiveTimingValue (currentTime) {
+  getActiveTimingKey (currentTime) {
     const timingKeys = Object.keys(this.timings)
 
     var activeTimings = timingKeys.filter(function (timing) {
@@ -35,15 +27,11 @@ class mediaEvents {
       }
     })
   
-    return this.timings[activeTimings[activeTimings.length - 1]]
+    return activeTimings[activeTimings.length - 1]
   }
 
   executeEvent (timingKey) {
-    window[timingKey]()
-  }
-
-  setText (timingKey) {
-    this.textNode.innerHTML = timingKey
+    this.timings[timingKey]()
   }
 
   isCache (event, timingKey) {
@@ -61,16 +49,10 @@ class mediaEvents {
 
     eventListeners.forEach((eventListener) => {
       mediaNode.addEventListener(eventListener, () => {
-        let timingKey = this.getActiveTimingValue(mediaNode.currentTime)
+        let timingKey = this.getActiveTimingKey(mediaNode.currentTime)
   
         if (timingKey !== null && !this.isCache(eventListener, timingKey)) {
-          if (this.type == 'text') {
-            this.setText(timingKey)
-          }
-          else if (this.type == 'events') {
-            this.executeEvent(timingKey)
-          }
-
+          this.executeEvent(timingKey)
           this.setCache(eventListener, timingKey)
         }
       })
