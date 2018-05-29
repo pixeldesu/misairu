@@ -12,7 +12,7 @@ $ npm install mediaevents
 **unpkg:**
 
 ```html
-<script src="https://unpkg.com/mediaevents@1.0.1/mediaevents.js"></script>
+<script src="https://unpkg.com/mediaevents@3.0.0/mediaevents.js"></script>
 ```
 
 Or you can go the traditional way, grab `mediaevents.js` from the repository and put it somewhere in your project with a `<script>` tag!
@@ -25,6 +25,7 @@ Or you can go the traditional way, grab `mediaevents.js` from the repository and
 const media = document.getElementById('audioplayer')
 const text = document.getElementById('text')
 
+// define timings and their functions
 const timings = {
   "0": function() {
     text.innerHTML = 'New text at start'
@@ -35,25 +36,27 @@ const timings = {
   }
 }
 
-const ev = new mediaEvents(timings)
-ev.bind(media)
+// create mediaEvents instance
+const ev = new mediaEvents(media, timings)
+
+document.addEventListener('mediaEvents.ready', function(event) {
+  // start playback once mediaEvents is ready
+  ev.start()
+})
 ```
 
 ## Reference
 
-### `new mediaEvents(timings)`
+### `new mediaEvents(audioSource, timings)`
 
+* **`audioSource`:** (required) Link to an audio file or `<audio>`-Tag DOM Element
 * **`timings`:** (required) Object where the keys represent the time and the values are functions or function references
 
-### `mediaEvents.bind(mediaNode)`
+### `mediaEvents.start()`
 
-* **`mediaNode`:** (required) media element (can be `video` or `audio` tag or anything that supplies a `currentTime` parameter) the events should be attached to.
-
-## Known Issues
-
-The `timeupdate` event that is used by mediaEvents is not updated every millisecond or at a fixed interval, so it's not really accurate.
-
-You can use floats as timing values, but it's not guaranteed it will make it more accurate. Seconds work just fine in all cases.
+This will start playback of the specified audio and execute the events at the given time. As the audio buffer is always
+loaded asynchronously you should listen to the `mediaEvents.ready` event on `document` and execute this function once
+the event was emitted.
 
 ## License
 
