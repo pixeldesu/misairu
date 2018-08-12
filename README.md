@@ -12,7 +12,7 @@ $ npm install mediaevents
 **unpkg:**
 
 ```html
-<script src="https://unpkg.com/mediaevents@3.0.0/mediaevents.js"></script>
+<script src="https://unpkg.com/mediaevents@3.1.0/mediaevents.js"></script>
 ```
 
 Or you can go the traditional way, grab `mediaevents.js` from the repository and put it somewhere in your project with a `<script>` tag!
