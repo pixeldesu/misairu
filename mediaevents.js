@@ -67,6 +67,53 @@ class mediaEvents {
     return this._cache;
   }
 
+  set muted (muted) {
+    this._muted = muted
+  }
+
+  get muted () {
+    return this._muted
+  }
+
+  set volume (db) {
+    this._volume = db
+    this.clampGain()
+
+    if (!this.muted) {
+      this.gainNode.gain.value = this.dbToVolume(this._volume)
+    }
+  }
+
+  get volume () {
+    return this._volume
+  }
+
+  clampGain () {
+    if (this._volume < -80) {
+      this._volume = -80
+    } else if (this._volume > 5) {
+      this._volume = 5
+    }
+  }
+
+  dbToVolume (db) {
+    return Math.pow(10, db / 20)
+  }
+
+  mute() {
+    if (!this.muted) {
+      this.muted = true
+      this.gainNode.gain.value = 0
+    }
+  }
+
+  unmute() {
+    if (this.muted) {
+      this.muted = false
+      this.gainNode.gain.value = this.dbToVolume(this._volume)
+    }
+  }
+
   getActiveTimingKey (currentTime) {
     const timingKeys = Object.keys(this.timings)
 
