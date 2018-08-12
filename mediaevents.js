@@ -88,6 +88,14 @@ class mediaEvents {
     return this._volume
   }
 
+  set paused (paused) {
+    this._paused = paused;
+  }
+
+  get paused () {
+    return this._paused;
+  }
+
   clampGain () {
     if (this._volume < -80) {
       this._volume = -80
@@ -111,6 +119,20 @@ class mediaEvents {
     if (this.muted) {
       this.muted = false
       this.gainNode.gain.value = this.dbToVolume(this._volume)
+    }
+  }
+
+  pause () {
+    if (!this.paused) {
+      this.audioContext.suspend();
+      this.paused = true;
+    }
+  }
+
+  unpause () {
+    if (this.paused) {
+      this.audioContext.resume();
+      this.paused = false;
     }
   }
 
