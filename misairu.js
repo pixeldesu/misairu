@@ -13,10 +13,12 @@ class misairu {
     this.timings = timings;
 
     this.audioContext = new AudioContext();
-    this.audioSource = audioSource;
+    this.audioElement = null;
 
     this.gainNode = this.audioContext.createGain();
     this.gainNode.connect(this.audioContext.destination);
+
+    this.audioSource = audioSource;
 
     this.eventHandler = null;
 
@@ -35,13 +37,29 @@ class misairu {
     if (typeof audioSource == "string") {
       this.fetchAudioSource(audioSource);
     } else if (typeof audioSource == "object" && audioSource.tagName == "AUDIO") {
-      this.fetchAudioSource(audioSource.src);
+      this.attachAudioElementSource(audioSource);
     }
   }
 
   get audioSource () {
     return this._audioSource;
   }
+
+  set gainNode (gainNode) {
+    this._gainNode = gainNode;
+  }
+
+  get gainNode () {
+    return this._gainNode;
+  }
+
+  set audioElement (audioElement) {
+    this._audioElement = audioElement;
+  }
+
+  get audioElement () {
+    return this._audioElement;
+  } 
 
   set startTime (startTime) {
     this._startTime = startTime;
@@ -67,25 +85,33 @@ class misairu {
     return this._cache;
   }
 
+  set eventHandler (eventHandler) {
+    this._eventHandler = eventHandler; 
+  }
+
+  get eventHandler () {
+    return this._eventHandler;
+  }
+
   set muted (muted) {
-    this._muted = muted
+    this._muted = muted;
   }
 
   get muted () {
-    return this._muted
+    return this._muted;
   }
 
   set volume (db) {
-    this._volume = db
-    this.clampGain()
+    this._volume = db;
+    this.clampGain();
 
     if (!this.muted) {
-      this.gainNode.gain.value = this.dbToVolume(this._volume)
+      this.gainNode.gain.value = this.dbToVolume(this._volume);
     }
   }
 
   get volume () {
-    return this._volume
+    return this._volume;
   }
 
   set paused (paused) {
@@ -98,27 +124,27 @@ class misairu {
 
   clampGain () {
     if (this._volume < -80) {
-      this._volume = -80
+      this._volume = -80;
     } else if (this._volume > 5) {
-      this._volume = 5
+      this._volume = 5;
     }
   }
 
   dbToVolume (db) {
-    return Math.pow(10, db / 20)
+    return Math.pow(10, db / 20);
   }
 
   mute() {
     if (!this.muted) {
-      this.muted = true
-      this.gainNode.gain.value = 0
+      this.muted = true;
+      this.gainNode.gain.value = 0;
     }
   }
 
   unmute() {
     if (this.muted) {
-      this.muted = false
-      this.gainNode.gain.value = this.dbToVolume(this._volume)
+      this.muted = false;
+      this.gainNode.gain.value = this.dbToVolume(this._volume);
     }
   }
 
@@ -137,23 +163,15 @@ class misairu {
   }
 
   getActiveTimingKey (currentTime) {
-    const timingKeys = Object.keys(this.timings)
+    const timingKeys = Object.keys(this.timings);
 
     var activeTimings = timingKeys.filter(function (timing) {
       if (currentTime >= parseFloat(timing)) {
-        return true
+        return true;
       }
     })
   
-    return activeTimings[activeTimings.length - 1]
-  }
-
-  set eventHandler (eventHandler) {
-    this._eventHandler = eventHandler; 
-  }
-
-  get eventHandler () {
-    return this._eventHandler;
+    return activeTimings[activeTimings.length - 1];
   }
 
   fetchAudioSource (audioSource) {
@@ -174,9 +192,23 @@ class misairu {
     })
   }
 
+  attachAudioElementSource (audioSource) {
+    let source = this.audioContext.createMediaElementSource(audioSource);
+    this.audioElement = audioSource;
+    
+    source.connect(this.gainNode);
+    this._audioSource = source;
+  }
+
   start () {
     this.startTime = this.audioContext.currentTime;
-    this.audioSource.start();
+
+    if (this.audioElement !== null) {
+      this.audioElement.play();
+    } else {
+      this.audioSource.start();
+    }
+
     this.startEventHandling();
   }
 

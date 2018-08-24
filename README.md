@@ -14,7 +14,7 @@ $ npm install misairu
 **unpkg:**
 
 ```html
-<script src="https://unpkg.com/misairu@3.1.0/misairu.js"></script>
+<script src="https://unpkg.com/misairu/misairu.js"></script>
 ```
 
 Or you can go the traditional way, grab `misairu.js` from the repository and put it somewhere in your project with a `<script>` tag!
@@ -41,6 +41,7 @@ const timings = {
 // create misairu instance
 const ev = new misairu(media, timings)
 
+// you only need this if your audiosource is external e.g. a link to an audio file
 document.addEventListener('misairu.ready', function(event) {
   // start playback once misairu is ready
   ev.start()
@@ -54,10 +55,16 @@ document.addEventListener('misairu.ready', function(event) {
 * **`audioSource`:** (required) Link to an audio file or `<audio>`-Tag DOM Element
 * **`timings`:** (required) Object where the keys represent the time and the values are functions or function references
 
+**Note on `audioSource`:**
+
+If you use a `HTMLMediaElement`, misairu won't fire the `misairu.ready` event, as the content is already given. To be really
+sure that everything starts when you want it to, give your media element the attribute `preload="auto"` to have it pre-buffer
+ahead of usage.
+
 ### `misairu.start()`
 
-This will start playback of the specified audio and execute the events at the given time. As the audio buffer is always
-loaded asynchronously you should listen to the `misairu.ready` event on `document` and execute this function once
+This will start playback of the specified audio and execute the events at the given time. If your audio source is external, the audio buffer is 
+loaded asynchronously and you should listen to the `misairu.ready` event on `document` and execute this function once
 the event was emitted.
 
 ### `misairu.[un]pause()`
