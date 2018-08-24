@@ -14,7 +14,7 @@ $ npm install misairu
 **unpkg:**
 
 ```html
-<script src="https://unpkg.com/misairu@3.1.0/mediaevents.js"></script>
+<script src="https://unpkg.com/misairu@3.1.0/misairu.js"></script>
 ```
 
 Or you can go the traditional way, grab `misairu.js` from the repository and put it somewhere in your project with a `<script>` tag!
