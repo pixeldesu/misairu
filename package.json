@@ -1,14 +1,14 @@
 {
-  "name": "mediaevents",
+  "name": "misairu",
   "version": "3.1.0",
   "description": "Fire events for specific timeframes easily",
-  "main": "mediaevents.js",
+  "main": "misairu.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pixeldesu/mediaEvents.git"
+    "url": "git+https://github.com/pixeldesu/misairu.git"
   },
   "keywords": [
     "audio",
@@ -20,7 +20,7 @@
   "author": "Andreas Nedbal <andy@pixelde.su>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pixeldesu/mediaEvents/issues"
+    "url": "https://github.com/pixeldesu/misairu/issues"
   },
-  "homepage": "https://github.com/pixeldesu/mediaEvents#readme"
+  "homepage": "https://github.com/pixeldesu/misairu#readme"
 }

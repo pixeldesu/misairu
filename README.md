@@ -1,21 +1,23 @@
-# mediaEvents
-:musical_note: Fire events for specific timeframes easily
+# misairu  
+_ミサイル // MISSILE_  
+
+:rocket: Fire events for specific timeframes easily
 
 ## Getting it
 
 **NPM:**
 
 ```
-$ npm install mediaevents
+$ npm install misairu
 ```
 
 **unpkg:**
 
 ```html
-<script src="https://unpkg.com/mediaevents@3.1.0/mediaevents.js"></script>
+<script src="https://unpkg.com/misairu@3.1.0/mediaevents.js"></script>
 ```
 
-Or you can go the traditional way, grab `mediaevents.js` from the repository and put it somewhere in your project with a `<script>` tag!
+Or you can go the traditional way, grab `misairu.js` from the repository and put it somewhere in your project with a `<script>` tag!
 
 ## Usage
 
@@ -36,28 +38,46 @@ const timings = {
   }
 }
 
-// create mediaEvents instance
-const ev = new mediaEvents(media, timings)
+// create misairu instance
+const ev = new misairu(media, timings)
 
-document.addEventListener('mediaEvents.ready', function(event) {
-  // start playback once mediaEvents is ready
+document.addEventListener('misairu.ready', function(event) {
+  // start playback once misairu is ready
   ev.start()
 })
 ```
 
 ## Reference
 
-### `new mediaEvents(audioSource, timings)`
+### `new misairu(audioSource, timings)`
 
 * **`audioSource`:** (required) Link to an audio file or `<audio>`-Tag DOM Element
 * **`timings`:** (required) Object where the keys represent the time and the values are functions or function references
 
-### `mediaEvents.start()`
+### `misairu.start()`
 
 This will start playback of the specified audio and execute the events at the given time. As the audio buffer is always
-loaded asynchronously you should listen to the `mediaEvents.ready` event on `document` and execute this function once
+loaded asynchronously you should listen to the `misairu.ready` event on `document` and execute this function once
 the event was emitted.
+
+### `misairu.[un]pause()`
+
+Pauses/Resumes playback and event execution.
+
+### `misairu.[un]mute()`
+
+(Un)mutes audio of the misairu instance.
+
+### `misairu.volume = x`
+
+Sets the volume to `x`, can be a value between -80 and 5.
+
+## Shoutouts
+
+* [Rocket](https://github.com/rocket/rocket) for basically being the "big brother" of this small project
+* [coderobe](https://github.com/coderobe) for [microhues](https://github.com/coderobe/microhues), which helped me understanding the Web Audio APIs
+* [ed](https://github.com/9001), as I'm basically building this to have an easy framework to build as creative things as he does
 
 ## License
 
-mediaEvents is licensed under the MIT license
+misairu is licensed under the MIT license

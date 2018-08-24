@@ -1,13 +1,13 @@
-/* mediaEvents
- * https://github.com/pixeldesu/mediaEvents
+/* misairu
+ * https://github.com/pixeldesu/misairu
  * 
  * 
  * Copyright pixeldesu and other contributors
  * Licensed under the MIT License
- * https://github.com/pixeldesu/mediaEvents/blob/master/LICENSE
+ * https://github.com/pixeldesu/misairu/blob/master/LICENSE
  */
 
-class mediaEvents {
+class misairu {
   constructor (audioSource, timings) {
     if (timings === null) console.error('You need to specify a timings object');
     this.timings = timings;
@@ -168,7 +168,7 @@ class mediaEvents {
           source.buffer = buffer;
           source.connect(this.gainNode);
 
-          document.dispatchEvent(new Event('mediaEvents.ready'));
+          document.dispatchEvent(new Event('misairu.ready'));
           this._audioSource = source;
         })
     })
@@ -204,5 +204,5 @@ class mediaEvents {
 }
 
 if (typeof module === 'object' && module.exports) {
-  module.exports = mediaEvents;
+  module.exports = misairu;
 }
