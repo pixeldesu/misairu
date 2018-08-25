@@ -36,7 +36,7 @@ class misairu {
   set audioSource (audioSource) {
     if (typeof audioSource == "string") {
       this.fetchAudioSource(audioSource);
-    } else if (typeof audioSource == "object" && audioSource.tagName == "AUDIO") {
+    } else if (typeof audioSource == "object" && (audioSource.tagName == "AUDIO" || audioSource.tagName == "VIDEO")) {
       this.attachAudioElementSource(audioSource);
     }
   }
@@ -245,7 +245,7 @@ class misairu {
     this.eventHandler = window.requestAnimationFrame(this.handleEvents.bind(this));
   }
 
-  executeEvent (track, timingKey) {
+  executeEvent (track, timingKey, time) {
     this.timings[track][timingKey](this, timingKey, track, time);
   }
 }
