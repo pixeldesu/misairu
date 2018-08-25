@@ -22,7 +22,7 @@ class misairu {
 
     this.eventHandler = null;
 
-    this.cache = null;
+    this.cache = {};
   }
 
   set audioContext (audioContext) {
@@ -162,8 +162,20 @@ class misairu {
     }
   }
 
-  getActiveTimingKey (currentTime) {
-    const timingKeys = Object.keys(this.timings);
+  setCacheEntry (track, entry) {
+    this.cache[track] = entry;
+  }
+
+  getTrackCache (track) {
+    return this.cache[track];
+  }
+
+  getAllTracks () {
+    return Object.keys(this.timings);
+  }
+
+  getActiveTimingKey (track, currentTime) {
+    const timingKeys = Object.keys(this.timings[track]);
 
     var activeTimings = timingKeys.filter(function (timing) {
       if (currentTime >= parseFloat(timing)) {
@@ -220,18 +232,21 @@ class misairu {
 
   handleEvents () {
     let time = this.audioContext.currentTime - this.startTime;
-    let timingKey = this.getActiveTimingKey(time);
 
-    if (timingKey !== null && !(this.cache == timingKey)) {
-      this.executeEvent(timingKey);
-      this.cache = timingKey;
-    }
+    this.getAllTracks().forEach(function (track) {
+      let timingKey = this.getActiveTimingKey(track, time);
+
+      if (timingKey !== null && !(this.getTrackCache(track) == timingKey)) {
+        this.executeEvent(track, timingKey, time);
+        this.setCacheEntry(track, timingKey);
+      }
+    }.bind(this))
 
     this.eventHandler = window.requestAnimationFrame(this.handleEvents.bind(this));
   }
 
-  executeEvent (timingKey) {
-    this.timings[timingKey]();
+  executeEvent (track, timingKey) {
+    this.timings[track][timingKey](this, timingKey, track, time);
   }
 }
 

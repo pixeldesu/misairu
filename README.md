@@ -27,14 +27,18 @@ Or you can go the traditional way, grab `misairu.js` from the repository and put
 const media = document.getElementById('audioplayer')
 const text = document.getElementById('text')
 
-// define timings and their functions
+// define timings, tracks and their functions
 const timings = {
-  "0": function() {
-    text.innerHTML = 'New text at start'
+  "default": {
+    "0": function() {
+      text.innerHTML = 'New text at start'
+    }
   },
-  "10": function() {
-    document.body.style.backgroundColor = 'lightblue'
-    text.innerHTML = 'New text and background color after 10 seconds'
+  "default:2": {
+    "10": function() {
+      document.body.style.backgroundColor = 'lightblue'
+      text.innerHTML = 'New text and background color after 10 seconds'
+    }
   }
 }
 
@@ -78,6 +82,28 @@ Pauses/Resumes playback and event execution.
 ### `misairu.volume = x`
 
 Sets the volume to `x`, can be a value between -80 and 5.
+
+### Anatomy of the `timings` object
+
+```js
+// timings object, you pass this to the misairu constructor
+const timings = {
+  // track object
+  "default": {
+    // timing key - function
+    "0": function (instance, timingKey, track, time) {
+      // instance - misairu instance
+      // timingKey - current timing key ("0")
+      // track - current track ("default")
+      // time - current time (accurate time calculated from the start time and audio context time)
+
+      // >> put some code here <<
+    }
+  }
+}
+```
+
+All of the parameters passed to a timing function are optional and don't need to be used as they are only passed for convenience, so you can omit them.
 
 ## Shoutouts
 
