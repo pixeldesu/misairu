@@ -105,6 +105,35 @@ const timings = {
 
 All of the parameters passed to a timing function are optional and don't need to be used as they are only passed for convenience, so you can omit them.
 
+### `repeat` tracks
+
+It's possible to define repeating actions for a specific timeframe with special track type, following the naming scheme of `repeat:start-time:interval:end-time`.
+
+As an example:
+
+```js
+const timings = {
+  "repeat:1:2:10": myCoolFunction 
+}
+```
+
+On creation of the `misairu` instance, the timing object gets compiled, so the repeat statement will be unfolded into:
+
+```js
+// misairu_instance.timings
+{
+  // the original track "repeat:1:2:10" was deleted 
+  // and replaced with a repeat-randomhash track containing all timed events
+  "repeat-xjas34f": { 
+    "1": myCoolFunction,
+    "3": myCoolFunction,
+    "5": myCoolFunction,
+    "7": myCoolFunction,
+    "9": myCoolFunction
+  }
+}
+```
+
 ## Shoutouts
 
 * [Rocket](https://github.com/rocket/rocket) for basically being the "big brother" of this small project

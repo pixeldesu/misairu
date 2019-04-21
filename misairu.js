@@ -23,6 +23,8 @@ class misairu {
     this.eventHandler = null;
 
     this.cache = {};
+
+    this.compile();
   }
 
   set audioContext (audioContext) {
@@ -184,6 +186,40 @@ class misairu {
     })
   
     return activeTimings[activeTimings.length - 1];
+  }
+
+  compile () {
+    this.getAllTracks().forEach((track) => {
+      if (track.startsWith('repeat:')) {
+        this.compileRepeat(track);
+      }
+    })
+  }
+
+  compileRepeat (track) {
+    if (typeof this.timings[track] != 'function')
+      throw Error(`The value of repeat track "${track}" is not a function`);
+
+    let repeatTrackArgs = track.split(":");
+
+    if (repeatTrackArgs.length != 4)
+      throw Error(`The repeat track "${track}" does not supply the valid amount of arguments`);
+
+    const startTime = parseFloat(repeatTrackArgs[1]);
+    const interval = parseFloat(repeatTrackArgs[2]);
+    const endTime = parseFloat(repeatTrackArgs[3]);
+
+    let time = startTime;
+    let tempTrack = {};
+
+    do {
+      tempTrack[time.toString()] = this.timings[track];
+      time += interval;
+    } while (time < endTime)
+
+    delete this.timings[track];
+
+    this.timings[`repeat-${Math.random().toString(36).substring(7)}`] = tempTrack;
   }
 
   fetchAudioSource (audioSource) {
