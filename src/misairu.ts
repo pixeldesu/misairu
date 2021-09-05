@@ -40,7 +40,7 @@ export class Misairu {
     this.compile()
   }
 
-  getOptimalAudioSource(audioSource: string | HTMLMediaElement): void {
+  private getOptimalAudioSource(audioSource: string | HTMLMediaElement): void {
     if (typeof audioSource == 'string') {
       this.fetchAudioSource(audioSource)
     } else if (
@@ -51,7 +51,7 @@ export class Misairu {
     }
   }
 
-  clampGain(): void {
+  private clampGain(): void {
     if (this._volume < -80) {
       this._volume = -80
     } else if (this._volume > 5) {
@@ -59,51 +59,51 @@ export class Misairu {
     }
   }
 
-  dbToVolume(db: number): number {
+  private dbToVolume(db: number): number {
     return Math.pow(10, db / 20)
   }
 
-  mute(): void {
+  public mute(): void {
     if (!this._muted) {
       this._muted = true
       this._gainNode.gain.value = 0
     }
   }
 
-  unmute(): void {
+  public unmute(): void {
     if (this._muted) {
       this._muted = false
       this._gainNode.gain.value = this.dbToVolume(this._volume)
     }
   }
 
-  pause(): void {
+  public pause(): void {
     if (!this._paused) {
       this._audioContext.suspend()
       this._paused = true
     }
   }
 
-  unpause(): void {
+  public unpause(): void {
     if (this._paused) {
       this._audioContext.resume()
       this._paused = false
     }
   }
 
-  setCacheEntry(track: string, entry: string): void {
+  private setCacheEntry(track: string, entry: string): void {
     this._cache[track] = entry
   }
 
-  getCacheEntry(track: string): string {
+  private getCacheEntry(track: string): string {
     return this._cache[track]
   }
 
-  getAllTracks(): string[] {
+  private getAllTracks(): string[] {
     return Object.keys(this._timings)
   }
 
-  getActiveTimingKey(track: string, currentTime: number): string {
+  private getActiveTimingKey(track: string, currentTime: number): string {
     const timingKeys = Object.keys(this._timings[track])
 
     const activeTimings = timingKeys.filter((timing) => {
@@ -115,7 +115,7 @@ export class Misairu {
     return activeTimings[activeTimings.length - 1]
   }
 
-  compile(): void {
+  private compile(): void {
     this.getAllTracks().forEach((track) => {
       if (track.startsWith('repeat:')) {
         this.compileRepeat(track)
@@ -123,7 +123,7 @@ export class Misairu {
     })
   }
 
-  compileRepeat(track: string): void {
+  private compileRepeat(track: string): void {
     if (typeof this._timings[track] != 'function')
       throw Error(`The value of repeat track "${track}" is not a function`)
 
@@ -149,7 +149,7 @@ export class Misairu {
     this._timings[`repeat-${Math.random().toString(36).substring(7)}`] = tempTrack
   }
 
-  fetchAudioSource(audioSource: string): void {
+  private fetchAudioSource(audioSource: string): void {
     const source = this._audioContext.createBufferSource()
 
     fetch(audioSource)
@@ -167,7 +167,7 @@ export class Misairu {
       })
   }
 
-  attachAudioElementSource(audioSource: HTMLMediaElement): void {
+  private attachAudioElementSource(audioSource: HTMLMediaElement): void {
     const source = this._audioContext.createMediaElementSource(audioSource)
     this._audioElement = audioSource
 
@@ -175,7 +175,7 @@ export class Misairu {
     this._audioSource = source
   }
 
-  start(): void {
+  public start(): void {
     this._startTime = this._audioContext.currentTime
 
     if (this._audioElement !== null) {
@@ -187,7 +187,7 @@ export class Misairu {
     this.startEventHandling()
   }
 
-  startEventHandling(): void {
+  private startEventHandling(): void {
     if (this._eventHandler == null) {
       this._eventHandler = window.requestAnimationFrame(() => {
         this.handleEvents()
@@ -195,7 +195,7 @@ export class Misairu {
     }
   }
 
-  handleEvents(): void {
+  private handleEvents(): void {
     const time = this._audioContext.currentTime - this._startTime
 
     this.getAllTracks().forEach((track) => {
@@ -212,7 +212,7 @@ export class Misairu {
     })
   }
 
-  executeEvent(track: string, timingKey: string, time: number): void {
+  private executeEvent(track: string, timingKey: string, time: number): void {
     this._timings[track][timingKey](this, timingKey, track, time)
   }
 }
