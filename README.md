@@ -43,7 +43,7 @@ const timings = {
 }
 
 // create misairu instance
-const ev = new misairu(media, timings)
+const ev = new Misairu(media, timings)
 
 // you only need this if your audiosource is external e.g. a link to an audio file
 document.addEventListener('misairu.ready', function(event) {
@@ -54,7 +54,7 @@ document.addEventListener('misairu.ready', function(event) {
 
 ## Reference
 
-### `new misairu(audioSource, timings)`
+### `new Misairu(audioSource, timings)`
 
 * **`audioSource`:** (required) Link to an audio file or `<audio>`-Tag DOM Element
 * **`timings`:** (required) Object where the keys represent the time and the values are functions or function references
