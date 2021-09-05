@@ -7,17 +7,17 @@ export class Misairu {
   private _cache: EventCache = {}
   private _eventHandler: number | null = null
   private readonly _gainNode: GainNode
-  private _muted: boolean = false
-  private _paused: boolean = false
-  private _startTime: number = 0
+  private _muted = false
+  private _paused = false
+  private _startTime = 0
   private _timings: TimingObject
-  private _volume: number = 0
+  private _volume = 0
 
-  get volume () {
+  get volume(): number {
     return this._volume
   }
 
-  set volume (db: number) {
+  set volume(db: number) {
     this._volume = db
     this.clampGain()
 
@@ -26,7 +26,7 @@ export class Misairu {
     }
   }
 
-  constructor (audioSource: string | HTMLMediaElement, timings: TimingObject) {
+  constructor(audioSource: string | HTMLMediaElement, timings: TimingObject) {
     if (timings === null) console.error('You need to specify a timings object')
     this._timings = timings
 
@@ -40,15 +40,18 @@ export class Misairu {
     this.compile()
   }
 
-  getOptimalAudioSource (audioSource: string | HTMLMediaElement) {
+  getOptimalAudioSource(audioSource: string | HTMLMediaElement): void {
     if (typeof audioSource == 'string') {
       this.fetchAudioSource(audioSource)
-    } else if (typeof audioSource == 'object' && (audioSource.tagName == 'AUDIO' || audioSource.tagName == 'VIDEO')) {
+    } else if (
+      typeof audioSource == 'object' &&
+      (audioSource.tagName == 'AUDIO' || audioSource.tagName == 'VIDEO')
+    ) {
       this.attachAudioElementSource(audioSource)
     }
   }
 
-  clampGain () {
+  clampGain(): void {
     if (this._volume < -80) {
       this._volume = -80
     } else if (this._volume > 5) {
@@ -56,63 +59,63 @@ export class Misairu {
     }
   }
 
-  dbToVolume (db: number) {
+  dbToVolume(db: number): number {
     return Math.pow(10, db / 20)
   }
 
-  mute() {
+  mute(): void {
     if (!this._muted) {
       this._muted = true
       this._gainNode.gain.value = 0
     }
   }
 
-  unmute() {
+  unmute(): void {
     if (this._muted) {
       this._muted = false
       this._gainNode.gain.value = this.dbToVolume(this._volume)
     }
   }
 
-  pause () {
+  pause(): void {
     if (!this._paused) {
       this._audioContext.suspend()
       this._paused = true
     }
   }
 
-  unpause () {
+  unpause(): void {
     if (this._paused) {
       this._audioContext.resume()
       this._paused = false
     }
   }
 
-  setCacheEntry (track: string, entry: string) {
+  setCacheEntry(track: string, entry: string): void {
     this._cache[track] = entry
   }
 
-  getCacheEntry (track: string) {
+  getCacheEntry(track: string): string {
     return this._cache[track]
   }
 
-  getAllTracks () {
+  getAllTracks(): string[] {
     return Object.keys(this._timings)
   }
 
-  getActiveTimingKey (track: string, currentTime: number) {
+  getActiveTimingKey(track: string, currentTime: number): string {
     const timingKeys = Object.keys(this._timings[track])
 
-    var activeTimings = timingKeys.filter((timing) => {
+    const activeTimings = timingKeys.filter((timing) => {
       if (currentTime >= parseFloat(timing)) {
         return true
       }
     })
-  
+
     return activeTimings[activeTimings.length - 1]
   }
 
-  compile () {
+  compile(): void {
     this.getAllTracks().forEach((track) => {
       if (track.startsWith('repeat:')) {
         this.compileRepeat(track)
@@ -120,11 +123,11 @@ export class Misairu {
     })
   }
 
-  compileRepeat (track: string) {
+  compileRepeat(track: string): void {
     if (typeof this._timings[track] != 'function')
       throw Error(`The value of repeat track "${track}" is not a function`)
 
-    let repeatTrackArgs = track.split(':')
+    const repeatTrackArgs = track.split(':')
 
     if (repeatTrackArgs.length != 4)
       throw Error(`The repeat track "${track}" does not supply the valid amount of arguments`)
@@ -134,7 +137,7 @@ export class Misairu {
     const endTime = parseFloat(repeatTrackArgs[3])
 
     let time = startTime
-    let tempTrack = {}
+    const tempTrack = {}
 
     do {
       tempTrack[time.toString()] = this._timings[track]
@@ -146,55 +149,57 @@ export class Misairu {
     this._timings[`repeat-${Math.random().toString(36).substring(7)}`] = tempTrack
   }
 
-  fetchAudioSource (audioSource: string) {
-    let that = this
-    let source = this._audioContext.createBufferSource()
+  fetchAudioSource(audioSource: string): void {
+    const source = this._audioContext.createBufferSource()
 
-    fetch(audioSource).then((response) => {
-      return response.arrayBuffer()
-    }).then((arrayBuffer) => {
-      that._audioContext.decodeAudioData(arrayBuffer)
-        .then((buffer) => {
+    fetch(audioSource)
+      .then((response) => {
+        return response.arrayBuffer()
+      })
+      .then((arrayBuffer) => {
+        this._audioContext.decodeAudioData(arrayBuffer).then((buffer) => {
           source.buffer = buffer
           source.connect(this._gainNode)
 
           document.dispatchEvent(new Event('misairu.ready'))
           this._audioSource = source
         })
-    })
+      })
   }
 
-  attachAudioElementSource (audioSource: HTMLMediaElement) {
-    let source = this._audioContext.createMediaElementSource(audioSource)
+  attachAudioElementSource(audioSource: HTMLMediaElement): void {
+    const source = this._audioContext.createMediaElementSource(audioSource)
     this._audioElement = audioSource
-    
+
     source.connect(this._gainNode)
     this._audioSource = source
   }
 
-  start () {
+  start(): void {
     this._startTime = this._audioContext.currentTime
 
     if (this._audioElement !== null) {
       this._audioElement.play()
     } else {
-      (this._audioSource as AudioBufferSourceNode).start()
+      ;(this._audioSource as AudioBufferSourceNode).start()
     }
 
     this.startEventHandling()
   }
 
-  startEventHandling () {
+  startEventHandling(): void {
     if (this._eventHandler == null) {
-      this._eventHandler = window.requestAnimationFrame(() => { this.handleEvents() })
+      this._eventHandler = window.requestAnimationFrame(() => {
+        this.handleEvents()
+      })
     }
   }
 
-  handleEvents () {
-    let time = this._audioContext.currentTime - this._startTime
+  handleEvents(): void {
+    const time = this._audioContext.currentTime - this._startTime
 
     this.getAllTracks().forEach((track) => {
-      let timingKey = this.getActiveTimingKey(track, time)
+      const timingKey = this.getActiveTimingKey(track, time)
 
       if (timingKey !== null && !(this.getCacheEntry(track) == timingKey)) {
         this.executeEvent(track, timingKey, time)
@@ -202,10 +207,12 @@ export class Misairu {
       }
     })
 
-    this._eventHandler = window.requestAnimationFrame(() => { this.handleEvents() })
+    this._eventHandler = window.requestAnimationFrame(() => {
+      this.handleEvents()
+    })
   }
 
-  executeEvent (track: string, timingKey: string, time: number) {
+  executeEvent(track: string, timingKey: string, time: number): void {
     this._timings[track][timingKey](this, timingKey, track, time)
   }
 }
