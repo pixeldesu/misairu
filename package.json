@@ -2,9 +2,17 @@
   "name": "misairu",
   "version": "4.2.0",
   "description": "Fire events for specific timeframes easily",
-  "main": "misairu.js",
+  "source": "src/index.ts",
+  "main": "dist/misairu.js",
+  "exports": "./dist/misairu.modern.js",
+  "module": "dist/misairu.module.js",
+  "unpkg": "dist/misairu.umd.js",
+  "iife": "dist/misairu.iife.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "microbundle",
+    "postbuild": "microbundle -i src/index.ts -o dist/misairu.iife.js --name Misairu --no-pkg-main -f iife",
+    "dev": "microbundle watch"
   },
   "repository": {
     "type": "git",
@@ -22,5 +30,9 @@
   "bugs": {
     "url": "https://github.com/pixeldesu/misairu/issues"
   },
-  "homepage": "https://github.com/pixeldesu/misairu#readme"
+  "homepage": "https://github.com/pixeldesu/misairu#readme",
+  "devDependencies": {
+    "microbundle": "^0.13.3",
+    "typescript": "^4.4.2"
+  }
 }

@@ -1,0 +1,1 @@
+export { Misairu as default } from './misairu'

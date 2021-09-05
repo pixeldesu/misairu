@@ -1,14 +1,5 @@
-/* misairu
- * https://github.com/pixeldesu/misairu
- * 
- * 
- * Copyright pixeldesu and other contributors
- * Licensed under the MIT License
- * https://github.com/pixeldesu/misairu/blob/master/LICENSE
- */
-
-class misairu {
-  constructor (audioSource, timings) {
+export class Misairu {
+  constructor (audioSource: string | HTMLMediaElement, timings: Object) {
     if (timings === null) console.error('You need to specify a timings object');
     this.timings = timings;
 
@@ -284,8 +275,4 @@ class misairu {
   executeEvent (track, timingKey, time) {
     this.timings[track][timingKey](this, timingKey, track, time);
   }
-}
-
-if (typeof module === 'object' && module.exports) {
-  module.exports = misairu;
 }
