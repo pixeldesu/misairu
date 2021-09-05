@@ -51,16 +51,30 @@ export class Misairu {
     }
   }
 
-  private clampGain(): void {
-    if (this._volume < -80) {
-      this._volume = -80
-    } else if (this._volume > 5) {
-      this._volume = 5
-    }
+  private fetchAudioSource(audioSource: string): void {
+    const source = this._audioContext.createBufferSource()
+
+    fetch(audioSource)
+      .then((response) => {
+        return response.arrayBuffer()
+      })
+      .then((arrayBuffer) => {
+        this._audioContext.decodeAudioData(arrayBuffer).then((buffer) => {
+          source.buffer = buffer
+          source.connect(this._gainNode)
+
+          document.dispatchEvent(new Event('misairu.ready'))
+          this._audioSource = source
+        })
+      })
   }
 
-  private dbToVolume(db: number): number {
-    return Math.pow(10, db / 20)
+  private attachAudioElementSource(audioSource: HTMLMediaElement): void {
+    const source = this._audioContext.createMediaElementSource(audioSource)
+    this._audioElement = audioSource
+
+    source.connect(this._gainNode)
+    this._audioSource = source
   }
 
   public mute(): void {
@@ -89,6 +103,18 @@ export class Misairu {
       this._audioContext.resume()
       this._paused = false
     }
+  }
+
+  private clampGain(): void {
+    if (this._volume < -80) {
+      this._volume = -80
+    } else if (this._volume > 5) {
+      this._volume = 5
+    }
+  }
+
+  private dbToVolume(db: number): number {
+    return Math.pow(10, db / 20)
   }
 
   private setCacheEntry(track: string, entry: string): void {
@@ -147,32 +173,6 @@ export class Misairu {
     delete this._timings[track]
 
     this._timings[`repeat-${Math.random().toString(36).substring(7)}`] = tempTrack
-  }
-
-  private fetchAudioSource(audioSource: string): void {
-    const source = this._audioContext.createBufferSource()
-
-    fetch(audioSource)
-      .then((response) => {
-        return response.arrayBuffer()
-      })
-      .then((arrayBuffer) => {
-        this._audioContext.decodeAudioData(arrayBuffer).then((buffer) => {
-          source.buffer = buffer
-          source.connect(this._gainNode)
-
-          document.dispatchEvent(new Event('misairu.ready'))
-          this._audioSource = source
-        })
-      })
-  }
-
-  private attachAudioElementSource(audioSource: HTMLMediaElement): void {
-    const source = this._audioContext.createMediaElementSource(audioSource)
-    this._audioElement = audioSource
-
-    source.connect(this._gainNode)
-    this._audioSource = source
   }
 
   public start(): void {
