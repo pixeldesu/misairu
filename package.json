@@ -12,7 +12,9 @@
   "scripts": {
     "build": "microbundle",
     "postbuild": "microbundle -i src/index.ts -o dist/misairu.iife.js --name Misairu --no-pkg-main -f iife",
-    "dev": "microbundle watch"
+    "dev": "microbundle watch",
+    "fix": "eslint --fix src/ --ext .ts",
+    "lint": "eslint src/ --ext .ts"
   },
   "repository": {
     "type": "git",
@@ -32,6 +34,9 @@
   },
   "homepage": "https://github.com/pixeldesu/misairu#readme",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.30.0",
+    "@typescript-eslint/parser": "^4.30.0",
+    "eslint": "^7.32.0",
     "microbundle": "^0.13.3",
     "typescript": "^4.4.2"
   }
