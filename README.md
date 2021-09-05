@@ -14,7 +14,7 @@ $ npm install misairu
 **unpkg:**
 
 ```html
-<script src="https://unpkg.com/misairu/misairu.js"></script>
+<script src="https://unpkg.com/misairu/dist/misairu.iife.js"></script>
 ```
 
 Or you can go the traditional way, grab `misairu.js` from the repository and put it somewhere in your project with a `<script>` tag!
