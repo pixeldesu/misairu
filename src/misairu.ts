@@ -239,7 +239,7 @@ export class Misairu {
           this._timings[processedTrackName] = eventTrack
 
           if (processor.deleteOriginTrack) {
-            delete this._timings[processedTrackName]
+            delete this._timings[trackName]
           }
         }
       })
