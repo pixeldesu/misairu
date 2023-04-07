@@ -1,4 +1,6 @@
 import { EventCache, TimingObject } from './types'
+import { dbToVolume, clampGain } from './utilities/audio'
+import { fetchAudioSource, attachAudioElementSource } from './utilities/source'
 
 /**
  * Main misairu class
@@ -10,18 +12,11 @@ export class Misairu {
   private readonly _audioContext: AudioContext
 
   /**
-   * If the audio source is a HTML5 media element (either a <audio> or <video> tag), this will be a reference to it
-   *
-   * @default null
-   */
-  private _audioElement: HTMLMediaElement | null = null
-
-  /**
    * A source node to play our audio from, either a buffered source from a downloaded media file or a media element source
    *
    * @default null
    */
-  private _audioSource: AudioBufferSourceNode | MediaElementAudioSourceNode | null = null
+  private _audioSource: HTMLMediaElement | AudioBufferSourceNode | MediaElementAudioSourceNode | null = null
 
   /**
    * A object containing the last executed time key per track to not execute an event on every tick
@@ -72,11 +67,10 @@ export class Misairu {
   }
 
   set volume(db: number) {
-    this._volume = db
-    this.clampGain()
+    this._volume = clampGain(db)
 
     if (!this._muted) {
-      this._gainNode.gain.value = this.dbToVolume(this._volume)
+      this._gainNode.gain.value = dbToVolume(this._volume)
     }
   }
 
@@ -108,52 +102,19 @@ export class Misairu {
    */
   private getOptimalAudioSource(audioSource: string | HTMLMediaElement): void {
     if (typeof audioSource == 'string') {
-      this.fetchAudioSource(audioSource)
+      fetchAudioSource(audioSource, this._audioContext).then((audioSource) => {
+        this._audioSource = audioSource
+        this._audioSource.connect(this._gainNode)
+
+        document.dispatchEvent(new Event('misairu.ready'))
+      })
     } else if (
       typeof audioSource == 'object' &&
       (audioSource.tagName == 'AUDIO' || audioSource.tagName == 'VIDEO')
     ) {
-      this.attachAudioElementSource(audioSource)
+      this._audioSource = attachAudioElementSource(audioSource, this._audioContext)
+      this._audioSource.connect(this._gainNode)
     }
-  }
-
-  /**
-   * Method to fetch the external audio file (if the audio source parameter was a string)
-   * and turning it into a `AudioBufferSourceNode`
-   *
-   * @param audioSource the audio source `Misairu` has been constructed with
-   * @internal
-   */
-  private fetchAudioSource(audioSource: string): void {
-    const source = this._audioContext.createBufferSource()
-
-    fetch(audioSource)
-      .then((response) => {
-        return response.arrayBuffer()
-      })
-      .then((arrayBuffer) => {
-        this._audioContext.decodeAudioData(arrayBuffer).then((buffer) => {
-          source.buffer = buffer
-          source.connect(this._gainNode)
-
-          document.dispatchEvent(new Event('misairu.ready'))
-          this._audioSource = source
-        })
-      })
-  }
-
-  /**
-   * Method to get an `MediaElementAudioSourceNode` from the passed audio source
-   *
-   * @param audioSource the audio source `Misairu` has been constructed with
-   * @internal
-   */
-  private attachAudioElementSource(audioSource: HTMLMediaElement): void {
-    const source = this._audioContext.createMediaElementSource(audioSource)
-    this._audioElement = audioSource
-
-    source.connect(this._gainNode)
-    this._audioSource = source
   }
 
   /**
@@ -176,7 +137,7 @@ export class Misairu {
   public unmute(): void {
     if (this._muted) {
       this._muted = false
-      this._gainNode.gain.value = this.dbToVolume(this._volume)
+      this._gainNode.gain.value = dbToVolume(this._volume)
     }
   }
 
@@ -202,30 +163,6 @@ export class Misairu {
       this._audioContext.resume()
       this._paused = false
     }
-  }
-
-  /**
-   * Clamps the volume to a min/max value to prevent accidental oversetting to way too loud measures
-   *
-   * @internal
-   */
-  private clampGain(): void {
-    if (this._volume < -80) {
-      this._volume = -80
-    } else if (this._volume > 5) {
-      this._volume = 5
-    }
-  }
-
-  /**
-   * Method to turn the passed decibel values into volume values for the audio playback
-   *
-   * @param db decibel value
-   * @returns volume value
-   * @internal
-   */
-  private dbToVolume(db: number): number {
-    return Math.pow(10, db / 20)
   }
 
   /**
@@ -333,11 +270,7 @@ export class Misairu {
   public start(): void {
     this._startTime = this._audioContext.currentTime
 
-    if (this._audioElement !== null) {
-      this._audioElement.play()
-    } else {
-      ;(this._audioSource as AudioBufferSourceNode).start()
-    }
+    ;(this._audioSource as AudioBufferSourceNode).start()
 
     this.startEventHandling()
   }
