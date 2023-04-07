@@ -30,3 +30,29 @@ export type EventTrack = {
 export type TimingObject = {
   [trackName: string]: EventTrack
 }
+
+/**
+ * Interface describing required methods/members for track processors
+ */
+export interface ITrackProcessor {
+  /**
+   * Member describing if the processed track should be deleted
+   */
+  deleteOriginTrack: boolean
+
+  /**
+   * Method to check if the track name matches to determine if the processor
+   * should process it
+   * 
+   * @param name name oƒ a track
+   */
+  matches(name: string): boolean
+
+  /**
+   * Main processing method
+   * 
+   * @param name name of the track to be processed
+   * @param track content of the track to be processed
+   */
+  process(name: string, track: EventTrack | EventFunction): [string, EventTrack]
+}

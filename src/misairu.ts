@@ -1,4 +1,5 @@
-import { EventCache, TimingObject } from './types'
+import { RepeatTrackProcessor } from './processors/repeat'
+import { EventCache, ITrackProcessor, TimingObject } from './types'
 import { dbToVolume, clampGain } from './utilities/audio'
 import { fetchAudioSource, attachAudioElementSource } from './utilities/source'
 
@@ -62,6 +63,13 @@ export class Misairu {
    */
   private _volume = 0
 
+  /**
+   * List of (predefined) track processors
+   */
+  private _processors: ITrackProcessor[] = [
+    new RepeatTrackProcessor()
+  ]
+
   get volume(): number {
     return this._volume
   }
@@ -91,7 +99,7 @@ export class Misairu {
 
     this.getOptimalAudioSource(audioSource)
 
-    this.compile()
+    this.processTracks()
   }
 
   /**
@@ -218,48 +226,24 @@ export class Misairu {
   }
 
   /**
-   * Main method to compile special sections in the timing configuration
+   * Main method to process special sections in the timing configuration
    *
    * @internal
    */
-  private compile(): void {
-    this.getAllTracks().forEach((track) => {
-      if (track.startsWith('repeat:')) {
-        this.compileRepeat(track)
-      }
+  private processTracks(): void {
+    this.getAllTracks().forEach((trackName) => {
+      this._processors.forEach((processor: ITrackProcessor) => {
+        if (processor.matches(trackName)) {
+          const [processedTrackName, eventTrack] = processor.process(trackName, this._timings[trackName])
+
+          this._timings[processedTrackName] = eventTrack
+
+          if (processor.deleteOriginTrack) {
+            delete this._timings[processedTrackName]
+          }
+        }
+      })
     })
-  }
-
-  /**
-   * Method to compile tracks whose name starts with `repeat:`
-   *
-   * @param track track to compile the repeat method for
-   * @internal
-   */
-  private compileRepeat(track: string): void {
-    if (typeof this._timings[track] != 'function')
-      throw Error(`The value of repeat track "${track}" is not a function`)
-
-    const repeatTrackArgs = track.split(':')
-
-    if (repeatTrackArgs.length != 4)
-      throw Error(`The repeat track "${track}" does not supply the valid amount of arguments`)
-
-    const startTime = parseFloat(repeatTrackArgs[1])
-    const interval = parseFloat(repeatTrackArgs[2])
-    const endTime = parseFloat(repeatTrackArgs[3])
-
-    let time = startTime
-    const tempTrack = {}
-
-    do {
-      tempTrack[time.toString()] = this._timings[track]
-      time += interval
-    } while (time < endTime)
-
-    delete this._timings[track]
-
-    this._timings[`repeat-${Math.random().toString(36).substring(7)}`] = tempTrack
   }
 
   /**
